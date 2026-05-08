@@ -1,0 +1,52 @@
+import { Link } from "@tanstack/react-router";
+import { ChevronRight, Star, IdCard, Hash, Car, Vote, Briefcase, Plane } from "lucide-react";
+import type { CitizenDoc } from "@/data/documents";
+
+const iconMap = { IdCard, Hash, Car, Vote, Briefcase, Plane } as const;
+
+interface Props {
+  doc: CitizenDoc;
+  isFavorite?: boolean;
+  onToggleFavorite?: () => void;
+}
+
+export function DocumentCard({ doc, isFavorite, onToggleFavorite }: Props) {
+  const Icon = iconMap[doc.icon as keyof typeof iconMap] ?? IdCard;
+
+  return (
+    <div className="group relative overflow-hidden rounded-2xl border border-border bg-card p-4 shadow-[var(--shadow-soft)] transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-elegant)]">
+      <Link to="/documento/$id" params={{ id: doc.id }} className="flex items-center gap-4">
+        <div
+          className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl text-primary-foreground"
+          style={{ background: "var(--gradient-primary)" }}
+        >
+          <Icon className="h-7 w-7" strokeWidth={2} />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-xs font-medium uppercase tracking-wider text-primary">
+            {doc.category}
+          </p>
+          <h3 className="mt-0.5 truncate text-base font-semibold text-foreground">
+            {doc.shortName}
+          </h3>
+          <p className="mt-0.5 truncate text-xs text-muted-foreground">{doc.issuer}</p>
+        </div>
+        <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" />
+      </Link>
+      {onToggleFavorite && (
+        <button
+          aria-label={isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+          onClick={onToggleFavorite}
+          className="absolute right-3 top-3 rounded-full p-1.5 transition-colors hover:bg-secondary"
+        >
+          <Star
+            className="h-4 w-4 transition-all"
+            fill={isFavorite ? "currentColor" : "none"}
+            style={{ color: isFavorite ? "var(--color-primary)" : "var(--color-muted-foreground)" }}
+            strokeWidth={2}
+          />
+        </button>
+      )}
+    </div>
+  );
+}
