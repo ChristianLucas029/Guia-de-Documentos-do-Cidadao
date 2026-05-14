@@ -1,5 +1,4 @@
 # Guia-de-Documentos-do-Cidad-o-
-Gustavo é Lindo!
 
 O Guia de Documentos do Cidadão é um aplicativo mobile que centraliza informações sobre os principais documentos pessoais brasileiros — RG, CPF, CNH, Título de Eleitor, Carteira de Trabalho, Passaporte — incluindo onde emitir, quais documentos são necessários, qual é o custo e qual o prazo para emissão. 
 
