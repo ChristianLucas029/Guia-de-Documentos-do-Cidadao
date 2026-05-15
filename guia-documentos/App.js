@@ -1,25 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import ListaScreen from './src/screens/ListaScreen';
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Texto Teste</Text>
+    <SafeAreaProvider>
       <StatusBar style="auto" />
-    </View>
+      <ListaScreen />
+    </SafeAreaProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#002c59',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  text: {
-    fontSize: 50,
-    color: '#ffffff',
-    fontWeight: 'bold',
-  },
-});
