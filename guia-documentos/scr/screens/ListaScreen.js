@@ -124,6 +124,16 @@ const DOCUMENTOS = [
     onde_emitir: 'App CTPS Digital',
     link_agendamento: 'https://www.gov.br/trabalho',
   },
+    {
+    id: '11',
+    nome: 'Documento de teste',
+    orgao_emissor: 'Receita Federal',
+    categoria: 'Identificação',
+    documentos_necessarios: 'RG ou Certidão de Nascimento',
+    custo: 'Gratuito',
+    prazo_emissao: 'Imediato',
+    onde_emitir: 'Agências dos Correios, Banco do Brasil ou online',
+  },
 ];
 
 // -------------------------------------------------------
