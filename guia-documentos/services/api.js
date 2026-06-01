@@ -13,3 +13,9 @@ export async function buscarDocumentos() {
   const r = await api.get('/classes/Documento');
   return r.data.results;
 }
+
+// Busca um documento específico por ID
+export async function buscarDocumentoPorId(id) {
+  const r = await api.get(`/classes/Documento/${id}`);
+  return r.data;
+}
