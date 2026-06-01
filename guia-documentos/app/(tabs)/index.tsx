@@ -41,8 +41,8 @@ export default function HomeScreen() {
   const [documentos, setDocumentos] = useState<Documento[]>([]);
   const [documentosFiltrados, setDocumentosFiltrados] = useState<Documento[]>([]);
   const [loading, setLoading] = useState(true);
-  const [busca, setBusca] = useState('');
-  const [categoriaSelecionada, setCategoriaSelecionada] = useState(''); // ← SEPARADO da busca
+  const [buscaNome, setBuscaNome] = useState(''); // ← SEPARADO: busca por nome
+  const [categoriaSelecionada, setCategoriaSelecionada] = useState(''); // ← SEPARADO: filtro por categoria
 
   const favoritos = useFavoritosStore((s) => s.favoritos);
   const adicionarFavorito = useFavoritosStore((s) => s.adicionarFavorito);
@@ -55,24 +55,24 @@ export default function HomeScreen() {
       .finally(() => setLoading(false));
   }, []);
 
-  // ← LÓGICA CORRIGIDA: filtrar por categoria E busca simultaneamente
+  // ← LÓGICA CORRIGIDA: filtrar por categoria OU por nome
   useEffect(() => {
     let resultado = documentos;
 
-    // 1. Filtrar por categoria
+    // 1. Filtrar por categoria (se selecionada)
     if (categoriaSelecionada) {
       resultado = resultado.filter((d) => d.categoria === categoriaSelecionada);
     }
 
-    // 2. Filtrar por busca (nome)
-    if (busca.trim()) {
+    // 2. Filtrar por nome (se digitado)
+    if (buscaNome.trim()) {
       resultado = resultado.filter((d) =>
-        d.nome.toLowerCase().includes(busca.toLowerCase())
+        d.nome.toLowerCase().includes(buscaNome.toLowerCase())
       );
     }
 
     setDocumentosFiltrados(resultado);
-  }, [busca, categoriaSelecionada, documentos]);
+  }, [buscaNome, categoriaSelecionada, documentos]);
 
   function handleToggleFavorito(id: string) {
     if (favoritos.has(id)) {
@@ -114,11 +114,11 @@ export default function HomeScreen() {
             style={s.inputBusca}
             placeholder="Buscar documento..."
             placeholderTextColor="#94a3b8"
-            value={busca}
-            onChangeText={setBusca}
+            value={buscaNome}
+            onChangeText={setBuscaNome}
           />
-          {busca ? (
-            <Pressable onPress={() => setBusca('')}>
+          {buscaNome ? (
+            <Pressable onPress={() => setBuscaNome('')}>
               <Ionicons name="close-circle" size={20} color="#94a3b8" />
             </Pressable>
           ) : null}
@@ -153,12 +153,12 @@ export default function HomeScreen() {
                     s.filtroBtn,
                     categoriaSelecionada === item.value && s.filtroBtnAtivo,
                   ]}
-                  onPress={() => setCategoriaSelecionada(item.value)} 
+                  onPress={() => setCategoriaSelecionada(item.value)}
                 >
                   <Text
                     style={[
                       s.filtroTexto,
-                      categoriaSelecionada === item.value && 
+                      categoriaSelecionada === item.value &&
                         s.filtroTextoAtivo,
                     ]}
                   >
