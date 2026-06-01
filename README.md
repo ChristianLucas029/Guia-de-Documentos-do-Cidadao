@@ -48,6 +48,7 @@ Preencha com suas credenciais do Back4App:
 - Clique no seu app
 - Copie App ID (campo "App ID")
 - Copie Rest Key (dropdown "Keys" → "Rest Key")
+
 ⚠️ Nunca compartilhe o arquivo .env.local — ele contém credenciais sensíveis!
 
 ## Passo 4: Iniciar o Servidor
