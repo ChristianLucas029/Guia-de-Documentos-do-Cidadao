@@ -37,7 +37,7 @@ export default function TabLayout() {
           title: 'Favoritos',
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
-              name={focused ? 'heart' : 'heart-outline'}
+              name={focused ? 'star' : 'star-outline'}
               size={size}
               color={color}
             />
@@ -57,7 +57,6 @@ export default function TabLayout() {
           ),
         }}
       />
-      {/* Remover a aba explore */}
     </Tabs>
   );
 }

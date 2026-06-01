@@ -100,11 +100,11 @@ export default function DetalheScreen() {
             <Ionicons name="arrow-back" size={24} color="#fff" />
           </Pressable>
           <Pressable onPress={handleToggleFavorito}>
-            <Ionicons
-              name={isFavorito ? 'star' : 'star-outline'}
-              size={24}
-              color={isFavorito ? '#fbbf24' : '#fff'}
-            />
+          <Ionicons
+            name={isFavorito ? 'star' : 'star-outline'}
+            size={24}
+            color={isFavorito ? '#fbbf24' : '#94a3b8'}
+          />
           </Pressable>
         </View>
 

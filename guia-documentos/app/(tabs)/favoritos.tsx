@@ -9,21 +9,20 @@ import {
     Text,
     View,
 } from 'react-native';
-import DocumentoCard from '../../components/DocumentoCard';
+import DocumentoListCard from '../../components/DocumentoListCard';
 import { buscarDocumentos } from '../../services/api';
 import { useFavoritosStore } from '../../store/useFavoritosStore';
 
-// ← ADICIONE ISTO
 type Documento = {
   objectId: string;
   nome: string;
   categoria: string;
+  orgao_emissor?: string;
 };
-// ← FIM
 
 export default function FavoritosScreen() {
   const router = useRouter();
-  const [documentos, setDocumentos] = useState<Documento[]>([]); // ← ADICIONE <Documento[]>
+  const [documentos, setDocumentos] = useState<Documento[]>([]);
   const [loading, setLoading] = useState(true);
 
   const favoritos = useFavoritosStore((s) => s.favoritos);
@@ -47,6 +46,18 @@ export default function FavoritosScreen() {
     );
   }
 
+  // ← ADICIONE ISTO: Componente separado para a lista vazia
+  const renderListaVazia = () => (
+    <View style={s.vazio}>
+      <Ionicons name="star-outline" size={48} color="#cbd5e1" />
+      <Text style={s.textoVazio}>Nenhum favorito ainda</Text>
+      <Text style={s.dica}>
+        Favorite documentos na aba Documentos para acessá-los aqui
+      </Text>
+    </View>
+  );
+  // ← FIM
+
   return (
     <View style={s.tela}>
       <FlatList
@@ -54,9 +65,10 @@ export default function FavoritosScreen() {
         keyExtractor={(item) => item.objectId}
         contentContainerStyle={s.lista}
         renderItem={({ item }) => (
-          <DocumentoCard
+          <DocumentoListCard
             nome={item.nome}
             categoria={item.categoria}
+            orgao_emissor={item.orgao_emissor}
             isFavorito={true}
             onPress={() => router.push(`/detalhe/${item.objectId}`)}
             onToggleFavorito={() => removerFavorito(item.objectId)}
@@ -64,22 +76,17 @@ export default function FavoritosScreen() {
         )}
         ListHeaderComponent={() => (
           <View style={s.cabecalho}>
-            <Text style={s.titulo}>❤️ Favoritos</Text>
+            <View style={s.tituloContainer}>
+              <Ionicons name="star" size={28} color="#fbbf24" />
+              <Text style={s.titulo}>Favoritos</Text>
+            </View>
             <Text style={s.subtitulo}>
               {documentosFavoritos.length} documento
               {documentosFavoritos.length !== 1 ? 's' : ''}
             </Text>
           </View>
         )}
-        ListEmptyComponent={() => (
-          <View style={s.vazio}>
-            <Ionicons name="heart-outline" size={48} color="#cbd5e1" />
-            <Text style={s.textoVazio}>Nenhum favorito ainda</Text>
-            <Text style={s.dica}>
-              Favorite documentos nas outras abas para acessá-los aqui
-            </Text>
-          </View>
-        )}
+        ListEmptyComponent={renderListaVazia} 
       />
     </View>
   );
@@ -92,7 +99,8 @@ const s = StyleSheet.create({
   },
   lista: {
     padding: 16,
-    paddingBottom: 32,
+    paddingTop: 16,
+    paddingBottom: 120,
   },
   telaCarregando: {
     flex: 1,
@@ -103,11 +111,16 @@ const s = StyleSheet.create({
   cabecalho: {
     marginBottom: 20,
   },
+  tituloContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 4,
+  },
   titulo: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#1a1a2e',
-    marginBottom: 4,
   },
   subtitulo: {
     fontSize: 14,
