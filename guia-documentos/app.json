@@ -6,16 +6,9 @@
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "guiadocumentos",
-    "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
-    "primaryColor": "#0891b2", // ← COR PRINCIPAL DO APP
-    "backgroundColor": "#f0f4f8", // ← COR DE FUNDO PADRÃO
+    "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": true,
-      "statusBar": {
-        "barStyle": "light-content", // ← ícones brancos
-        "backgroundColor": "#0891b2" // ← fundo azul
-      }
+      "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
@@ -23,14 +16,7 @@
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
-      },
-      "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false,
-      "statusBar": {
-        "barStyle": "light-content", // ← ícones brancos
-        "backgroundColor": "#0891b2" // ← fundo azul
-      },
-      "statusBarBackgroundColor": "#0891b2" // ← alternativa para Android
+      }
     },
     "web": {
       "output": "static",
@@ -50,10 +36,6 @@
           }
         }
       ]
-    ],
-    "experiments": {
-      "typedRoutes": true,
-      "reactCompiler": true
-    }
+    ]
   }
 }
