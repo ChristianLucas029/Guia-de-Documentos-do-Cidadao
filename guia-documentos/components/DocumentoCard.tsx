@@ -33,15 +33,19 @@ export default function DocumentoCard({
           <Ionicons name={icone} size={32} color="#fff" />
         </View>
         <View style={s.texto}>
-          <Text style={s.categoria}>{categoria}</Text>
-          <Text style={s.nome}>{nome}</Text>
+          <Text style={s.categoria} numberOfLines={1}>
+            {categoria}
+          </Text>
+          <Text style={s.nome} numberOfLines={2}>
+            {nome}
+          </Text>
         </View>
       </View>
       {onToggleFavorito && (
         <Pressable onPress={onToggleFavorito} style={s.favoritoBtn}>
           <Ionicons
             name={isFavorito ? 'star' : 'star-outline'}
-            size={24}
+            size={20}
             color={isFavorito ? '#fbbf24' : '#cbd5e1'}
           />
         </Pressable>
@@ -52,46 +56,45 @@ export default function DocumentoCard({
 
 const s = StyleSheet.create({
   card: {
+    flex: 1,
     backgroundColor: '#fff',
     borderRadius: 16,
-    padding: 16,
-    flexDirection: 'row',
+    padding: 12,
+    flexDirection: 'column',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     borderWidth: 1,
     borderColor: '#e2e8f0',
-    minHeight: 100,
   },
   conteudo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-    gap: 12,
+    width: '100%',
+    marginBottom: 8,
   },
   iconContainer: {
-    width: 56,
-    height: 56,
+    width: 48,
+    height: 48,
     borderRadius: 12,
     backgroundColor: '#0891b2',
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 8,
   },
   texto: {
     flex: 1,
   },
   categoria: {
-    fontSize: 11,
+    fontSize: 10,
     color: '#0891b2',
     fontWeight: '600',
-    marginBottom: 4,
+    marginBottom: 2,
   },
   nome: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
-    color: '#1a1a2e',
-    marginBottom: 4,
+    color: '#001632',
   },
   favoritoBtn: {
-    padding: 8,
+    alignSelf: 'flex-end',
+    padding: 4,
   },
 });

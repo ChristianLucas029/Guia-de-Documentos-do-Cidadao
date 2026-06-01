@@ -5,10 +5,8 @@ import { useEffect, useState } from 'react';
 import {
     ActivityIndicator,
     FlatList,
-    Pressable,
     StyleSheet,
     Text,
-    TextInput,
     View,
 } from 'react-native';
 import DocumentoCard from '../../components/DocumentoCard';
@@ -19,14 +17,19 @@ type Documento = {
   objectId: string;
   nome: string;
   categoria: string;
+  descricao?: string;
+  orgao_emissor?: string;
+  custo?: string;
+  prazo?: string;
+  documentos_necessarios?: string;
+  onde_emitir?: string;
+  link_agendamento?: string;
 };
 
 export default function HomeScreen() {
   const router = useRouter();
   const [documentos, setDocumentos] = useState<Documento[]>([]);
-  const [documentosFiltrados, setDocumentosFiltrados] = useState<Documento[]>([]);
   const [loading, setLoading] = useState(true);
-  const [busca, setBusca] = useState('');
 
   const favoritos = useFavoritosStore((s) => s.favoritos);
   const adicionarFavorito = useFavoritosStore((s) => s.adicionarFavorito);
@@ -38,17 +41,6 @@ export default function HomeScreen() {
       .catch((e) => console.error(e))
       .finally(() => setLoading(false));
   }, []);
-
-  useEffect(() => {
-    if (busca.trim()) {
-      const filtrados = documentos.filter((d) =>
-        d.nome.toLowerCase().includes(busca.toLowerCase())
-      );
-      setDocumentosFiltrados(filtrados);
-    } else {
-      setDocumentosFiltrados(documentos);
-    }
-  }, [busca, documentos]);
 
   function handleToggleFavorito(id: string) {
     if (favoritos.has(id)) {
@@ -68,11 +60,8 @@ export default function HomeScreen() {
 
   // Agrupar documentos em pares
   const documentosEmPares = [];
-  for (let i = 0; i < documentosFiltrados.length; i += 2) {
-    documentosEmPares.push([
-      documentosFiltrados[i],
-      documentosFiltrados[i + 1],
-    ]);
+  for (let i = 0; i < documentos.length; i += 2) {
+    documentosEmPares.push([documentos[i], documentos[i + 1]]);
   }
 
   return (
@@ -87,27 +76,6 @@ export default function HomeScreen() {
         <Text style={s.subtitulo}>
           Onde emitir, custo, prazo e o que levar — tudo num só lugar.
         </Text>
-
-        <View style={s.campoBusca}>
-          <Ionicons
-            name="search"
-            size={20}
-            color="#94a3b8"
-            style={s.iconeBusca}
-          />
-          <TextInput
-            style={s.inputBusca}
-            placeholder="Buscar documento..."
-            placeholderTextColor="#94a3b8"
-            value={busca}
-            onChangeText={setBusca}
-          />
-          {busca ? (
-            <Pressable onPress={() => setBusca('')}>
-              <Ionicons name="close-circle" size={20} color="#94a3b8" />
-            </Pressable>
-          ) : null}
-        </View>
       </View>
 
       <FlatList
@@ -204,29 +172,11 @@ const s = StyleSheet.create({
   subtitulo: {
     fontSize: 14,
     color: 'rgba(255,255,255,0.9)',
-    marginBottom: 20,
-  },
-  campoBusca: {
-    backgroundColor: '#fff',
-    borderRadius: 24,
-    paddingHorizontal: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#cbd5e1',
-  },
-  iconeBusca: {
-    marginRight: 8,
-  },
-  inputBusca: {
-    flex: 1,
-    paddingVertical: 12,
-    fontSize: 15,
-    color: '#1a1a2e',
   },
   lista: {
     padding: 16,
-    paddingBottom: 32,
+    paddingTop: 20,
+    paddingBottom: 100, // ← MARGEM INFERIOR para os ícones não cobrirem
   },
   linhaCards: {
     flexDirection: 'row',

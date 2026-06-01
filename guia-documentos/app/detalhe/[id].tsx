@@ -18,11 +18,12 @@ type Documento = {
   nome: string;
   categoria: string;
   descricao?: string;
-  orgao?: string;
+  orgao_emissor?: string;
   custo?: string;
   prazo?: string;
-  documentosNecessarios?: string;
-  ondeEmitir?: string;
+  documentos_necessarios?: string;
+  onde_emitir?: string;
+  link_agendamento?: string;
 };
 
 export default function DetalheScreen() {
@@ -121,13 +122,13 @@ export default function DetalheScreen() {
 
       {/* Conteúdo */}
       <View style={s.conteudo}>
-        {documento.orgao && (
+        {documento.orgao_emissor && (
           <View style={s.secao}>
             <View style={s.secaoHeader}>
               <Ionicons name="business" size={20} color="#0891b2" />
               <Text style={s.secaoTitulo}>ÓRGÃO EMISSOR</Text>
             </View>
-            <Text style={s.secaoTexto}>{documento.orgao}</Text>
+            <Text style={s.secaoTexto}>{documento.orgao_emissor}</Text>
           </View>
         )}
 
@@ -155,13 +156,13 @@ export default function DetalheScreen() {
           </View>
         )}
 
-        {documento.documentosNecessarios && (
+        {documento.documentos_necessarios && (
           <View style={s.secao}>
             <View style={s.secaoHeader}>
               <Ionicons name="checkmark-circle" size={20} color="#0891b2" />
               <Text style={s.secaoTitulo}>DOCUMENTOS NECESSÁRIOS</Text>
             </View>
-            {documento.documentosNecessarios
+            {documento.documentos_necessarios
               .split('\n')
               .filter((d) => d.trim())
               .map((doc, idx) => (
@@ -173,21 +174,26 @@ export default function DetalheScreen() {
           </View>
         )}
 
-        {documento.ondeEmitir && (
+        {documento.onde_emitir && (
           <View style={s.secao}>
             <View style={s.secaoHeader}>
               <Ionicons name="location" size={20} color="#0891b2" />
               <Text style={s.secaoTitulo}>ONDE EMITIR</Text>
             </View>
-            <Text style={s.secaoTexto}>{documento.ondeEmitir}</Text>
-
-            <Pressable style={s.botao}>
-              <Ionicons name="open-outline" size={18} color="#fff" />
-              <Text style={s.botaoTexto}>Acessar site oficial</Text>
-            </Pressable>
+            <Text style={s.secaoTexto}>{documento.onde_emitir}</Text>
           </View>
         )}
+
+        {documento.link_agendamento && (
+          <Pressable style={s.botao}>
+            <Ionicons name="open-outline" size={18} color="#fff" />
+            <Text style={s.botaoTexto}>Agendar online</Text>
+          </Pressable>
+        )}
       </View>
+
+      {/* Margem inferior para não cobrir ícones */}
+      <View style={s.espacoFinal} />
     </ScrollView>
   );
 }
@@ -267,7 +273,6 @@ const s = StyleSheet.create({
   },
   conteudo: {
     padding: 16,
-    paddingBottom: 32,
   },
   secao: {
     backgroundColor: '#fff',
@@ -325,5 +330,8 @@ const s = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 15,
+  },
+  espacoFinal: {
+    height: 80, // ← MARGEM INFERIOR para não cobrir ícones da tab bar
   },
 });
