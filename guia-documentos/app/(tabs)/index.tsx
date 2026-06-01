@@ -28,12 +28,21 @@ type Documento = {
   link_agendamento?: string;
 };
 
+const CATEGORIAS = [
+  { label: 'Todos', value: '' },
+  { label: 'Identificação', value: 'Identificação' },
+  { label: 'Habilitação', value: 'Habilitação' },
+  { label: 'Trabalho', value: 'Trabalho' },
+  { label: 'Viagem', value: 'Viagem' },
+];
+
 export default function HomeScreen() {
   const router = useRouter();
   const [documentos, setDocumentos] = useState<Documento[]>([]);
   const [documentosFiltrados, setDocumentosFiltrados] = useState<Documento[]>([]);
   const [loading, setLoading] = useState(true);
   const [busca, setBusca] = useState('');
+  const [categoriaSelecionada, setCategoriaSelecionada] = useState(''); // ← SEPARADO da busca
 
   const favoritos = useFavoritosStore((s) => s.favoritos);
   const adicionarFavorito = useFavoritosStore((s) => s.adicionarFavorito);
@@ -46,16 +55,24 @@ export default function HomeScreen() {
       .finally(() => setLoading(false));
   }, []);
 
+  // ← LÓGICA CORRIGIDA: filtrar por categoria E busca simultaneamente
   useEffect(() => {
+    let resultado = documentos;
+
+    // 1. Filtrar por categoria
+    if (categoriaSelecionada) {
+      resultado = resultado.filter((d) => d.categoria === categoriaSelecionada);
+    }
+
+    // 2. Filtrar por busca (nome)
     if (busca.trim()) {
-      const filtrados = documentos.filter((d) =>
+      resultado = resultado.filter((d) =>
         d.nome.toLowerCase().includes(busca.toLowerCase())
       );
-      setDocumentosFiltrados(filtrados);
-    } else {
-      setDocumentosFiltrados(documentos);
     }
-  }, [busca, documentos]);
+
+    setDocumentosFiltrados(resultado);
+  }, [busca, categoriaSelecionada, documentos]);
 
   function handleToggleFavorito(id: string) {
     if (favoritos.has(id)) {
@@ -125,13 +142,7 @@ export default function HomeScreen() {
         ListHeaderComponent={() => (
           <View style={s.filtrosContainer}>
             <FlatList
-              data={[
-                { label: 'Todos', value: '' },
-                { label: 'Identificação', value: 'Identificação' },
-                { label: 'Habilitação', value: 'Habilitação' },
-                { label: 'Trabalho', value: 'Trabalho' },
-                { label: 'Viagem', value: 'Viagem' },
-              ]}
+              data={CATEGORIAS}
               keyExtractor={(item) => item.value}
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -140,14 +151,15 @@ export default function HomeScreen() {
                 <Pressable
                   style={[
                     s.filtroBtn,
-                    busca === item.value && s.filtroBtnAtivo,
+                    categoriaSelecionada === item.value && s.filtroBtnAtivo,
                   ]}
-                  onPress={() => setBusca(item.value)}
+                  onPress={() => setCategoriaSelecionada(item.value)} 
                 >
                   <Text
                     style={[
                       s.filtroTexto,
-                      busca === item.value && s.filtroTextoAtivo,
+                      categoriaSelecionada === item.value && 
+                        s.filtroTextoAtivo,
                     ]}
                   >
                     {item.label}

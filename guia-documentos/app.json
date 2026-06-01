@@ -8,8 +8,14 @@
     "scheme": "guiadocumentos",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "primaryColor": "#0891b2", // ← COR PRINCIPAL DO APP
+    "backgroundColor": "#f0f4f8", // ← COR DE FUNDO PADRÃO
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "statusBar": {
+        "barStyle": "light-content", // ← ícones brancos
+        "backgroundColor": "#0891b2" // ← fundo azul
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -19,7 +25,12 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "statusBar": {
+        "barStyle": "light-content", // ← ícones brancos
+        "backgroundColor": "#0891b2" // ← fundo azul
+      },
+      "statusBarBackgroundColor": "#0891b2" // ← alternativa para Android
     },
     "web": {
       "output": "static",
@@ -33,7 +44,7 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
+          "backgroundColor": "#056982",
           "dark": {
             "backgroundColor": "#000000"
           }
