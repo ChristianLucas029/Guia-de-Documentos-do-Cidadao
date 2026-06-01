@@ -5,11 +5,13 @@ import { useEffect, useState } from 'react';
 import {
     ActivityIndicator,
     FlatList,
+    Pressable,
     StyleSheet,
     Text,
+    TextInput,
     View,
 } from 'react-native';
-import DocumentoCard from '../../components/DocumentoCard';
+import DocumentoListCard from '../../components/DocumentoListCard';
 import { buscarDocumentos } from '../../services/api';
 import { useFavoritosStore } from '../../store/useFavoritosStore';
 
@@ -29,7 +31,9 @@ type Documento = {
 export default function HomeScreen() {
   const router = useRouter();
   const [documentos, setDocumentos] = useState<Documento[]>([]);
+  const [documentosFiltrados, setDocumentosFiltrados] = useState<Documento[]>([]);
   const [loading, setLoading] = useState(true);
+  const [busca, setBusca] = useState('');
 
   const favoritos = useFavoritosStore((s) => s.favoritos);
   const adicionarFavorito = useFavoritosStore((s) => s.adicionarFavorito);
@@ -41,6 +45,17 @@ export default function HomeScreen() {
       .catch((e) => console.error(e))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    if (busca.trim()) {
+      const filtrados = documentos.filter((d) =>
+        d.nome.toLowerCase().includes(busca.toLowerCase())
+      );
+      setDocumentosFiltrados(filtrados);
+    } else {
+      setDocumentosFiltrados(documentos);
+    }
+  }, [busca, documentos]);
 
   function handleToggleFavorito(id: string) {
     if (favoritos.has(id)) {
@@ -58,12 +73,6 @@ export default function HomeScreen() {
     );
   }
 
-  // Agrupar documentos em pares
-  const documentosEmPares = [];
-  for (let i = 0; i < documentos.length; i += 2) {
-    documentosEmPares.push([documentos[i], documentos[i + 1]]);
-  }
-
   return (
     <View style={s.tela}>
       <View style={s.cabecalho}>
@@ -76,46 +85,81 @@ export default function HomeScreen() {
         <Text style={s.subtitulo}>
           Onde emitir, custo, prazo e o que levar — tudo num só lugar.
         </Text>
+
+        <View style={s.campoBusca}>
+          <Ionicons
+            name="search"
+            size={20}
+            color="#94a3b8"
+            style={s.iconeBusca}
+          />
+          <TextInput
+            style={s.inputBusca}
+            placeholder="Buscar documento..."
+            placeholderTextColor="#94a3b8"
+            value={busca}
+            onChangeText={setBusca}
+          />
+          {busca ? (
+            <Pressable onPress={() => setBusca('')}>
+              <Ionicons name="close-circle" size={20} color="#94a3b8" />
+            </Pressable>
+          ) : null}
+        </View>
       </View>
 
       <FlatList
-        data={documentosEmPares}
-        keyExtractor={(_, index) => `par-${index}`}
+        data={documentosFiltrados}
+        keyExtractor={(item) => item.objectId}
         contentContainerStyle={s.lista}
-        renderItem={({ item: par }) => (
-          <View style={s.linhaCards}>
-            {par[0] && (
-              <View style={s.cardWrapper}>
-                <DocumentoCard
-                  nome={par[0].nome}
-                  categoria={par[0].categoria}
-                  isFavorito={favoritos.has(par[0].objectId)}
-                  onPress={() => router.push(`/detalhe/${par[0].objectId}`)}
-                  onToggleFavorito={() =>
-                    handleToggleFavorito(par[0].objectId)
-                  }
-                />
-              </View>
-            )}
-            {par[1] && (
-              <View style={s.cardWrapper}>
-                <DocumentoCard
-                  nome={par[1].nome}
-                  categoria={par[1].categoria}
-                  isFavorito={favoritos.has(par[1].objectId)}
-                  onPress={() => router.push(`/detalhe/${par[1].objectId}`)}
-                  onToggleFavorito={() =>
-                    handleToggleFavorito(par[1].objectId)
-                  }
-                />
-              </View>
-            )}
-            {!par[1] && <View style={s.cardWrapper} />}
+        renderItem={({ item }) => (
+          <DocumentoListCard
+            nome={item.nome}
+            categoria={item.categoria}
+            orgao_emissor={item.orgao_emissor}
+            isFavorito={favoritos.has(item.objectId)}
+            onPress={() => router.push(`/detalhe/${item.objectId}`)}
+            onToggleFavorito={() => handleToggleFavorito(item.objectId)}
+          />
+        )}
+        ListHeaderComponent={() => (
+          <View style={s.filtrosContainer}>
+            <FlatList
+              data={[
+                { label: 'Todos', value: '' },
+                { label: 'Identificação', value: 'Identificação' },
+                { label: 'Habilitação', value: 'Habilitação' },
+                { label: 'Trabalho', value: 'Trabalho' },
+                { label: 'Viagem', value: 'Viagem' },
+              ]}
+              keyExtractor={(item) => item.value}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={s.filtrosList}
+              renderItem={({ item }) => (
+                <Pressable
+                  style={[
+                    s.filtroBtn,
+                    busca === item.value && s.filtroBtnAtivo,
+                  ]}
+                  onPress={() => setBusca(item.value)}
+                >
+                  <Text
+                    style={[
+                      s.filtroTexto,
+                      busca === item.value && s.filtroTextoAtivo,
+                    ]}
+                  >
+                    {item.label}
+                  </Text>
+                </Pressable>
+              )}
+            />
           </View>
         )}
         ListEmptyComponent={() => (
           <View style={s.vazio}>
-            <Ionicons name="document-outline" size={48} color="#cbd5e1" />
+            <Ionicons name="search-outline" size={48} color="#cbd5e1" />
             <Text style={s.textoVazio}>Nenhum documento encontrado</Text>
           </View>
         )}
@@ -172,19 +216,56 @@ const s = StyleSheet.create({
   subtitulo: {
     fontSize: 14,
     color: 'rgba(255,255,255,0.9)',
+    marginBottom: 20,
+  },
+  campoBusca: {
+    backgroundColor: '#fff',
+    borderRadius: 24,
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#cbd5e1',
+  },
+  iconeBusca: {
+    marginRight: 8,
+  },
+  inputBusca: {
+    flex: 1,
+    paddingVertical: 12,
+    fontSize: 15,
+    color: '#1a1a2e',
   },
   lista: {
     padding: 16,
-    paddingTop: 20,
-    paddingBottom: 100, // ← MARGEM INFERIOR para os ícones não cobrirem
+    paddingTop: 16,
+    paddingBottom: 120,
   },
-  linhaCards: {
-    flexDirection: 'row',
-    gap: 12,
-    marginBottom: 12,
+  filtrosContainer: {
+    marginBottom: 16,
   },
-  cardWrapper: {
-    flex: 1,
+  filtrosList: {
+    gap: 8,
+  },
+  filtroBtn: {
+    borderWidth: 1,
+    borderColor: '#cbd5e1',
+    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    backgroundColor: '#fff',
+  },
+  filtroBtnAtivo: {
+    backgroundColor: '#0891b2',
+    borderColor: '#0891b2',
+  },
+  filtroTexto: {
+    fontSize: 13,
+    color: '#64748b',
+    fontWeight: '500',
+  },
+  filtroTextoAtivo: {
+    color: '#fff',
   },
   vazio: {
     alignItems: 'center',
