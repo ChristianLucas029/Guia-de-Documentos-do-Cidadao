@@ -13,23 +13,24 @@ import {
 import { buscarDocumentoPorId } from '../../services/api';
 import { useFavoritosStore } from '../../store/useFavoritosStore';
 
-// ← ADICIONE ISTO
 type Documento = {
   objectId: string;
   nome: string;
   categoria: string;
   descricao?: string;
-  requisitos?: string;
+  orgao?: string;
+  custo?: string;
   prazo?: string;
+  documentosNecessarios?: string;
+  ondeEmitir?: string;
 };
-// ← FIM
 
 export default function DetalheScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams();
-  const [documento, setDocumento] = useState<Documento | null>(null); // ← ADICIONE <Documento | null>
+  const [documento, setDocumento] = useState<Documento | null>(null);
   const [loading, setLoading] = useState(true);
-  const [erro, setErro] = useState<string | null>(null); // ← ADICIONE <string | null>
+  const [erro, setErro] = useState<string | null>(null);
 
   const favoritos = useFavoritosStore((s) => s.favoritos);
   const adicionarFavorito = useFavoritosStore((s) => s.adicionarFavorito);
@@ -72,6 +73,7 @@ export default function DetalheScreen() {
 
   function handleToggleFavorito() {
     if (!documento) return;
+
     if (isFavorito) {
       removerFavorito(documento.objectId);
     } else {
@@ -79,51 +81,113 @@ export default function DetalheScreen() {
     }
   }
 
-  return (
-    <ScrollView style={s.tela} contentContainerStyle={s.conteudo}>
-      <View style={s.cabecalho}>
-        <Pressable onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={24} color="#0891b2" />
-        </Pressable>
-        <Pressable onPress={handleToggleFavorito}>
-          <Ionicons
-            name={isFavorito ? 'heart' : 'heart-outline'}
-            size={24}
-            color={isFavorito ? '#dc2626' : '#94a3b8'}
-          />
-        </Pressable>
-      </View>
+  const iconePorCategoria: Record<string, keyof typeof Ionicons.glyphMap> = {
+    Identificação: 'id-card',
+    Habilitação: 'car',
+    Trabalho: 'briefcase',
+    Viagem: 'airplane',
+  };
 
-      <View style={s.card}>
+  const icone = iconePorCategoria[documento.categoria] || 'document-text';
+
+  return (
+    <ScrollView style={s.tela}>
+      {/* Cabeçalho azul */}
+      <View style={s.cabecalho}>
+        <View style={s.cabecalhoTop}>
+          <Pressable onPress={() => router.back()}>
+            <Ionicons name="arrow-back" size={24} color="#fff" />
+          </Pressable>
+          <Pressable onPress={handleToggleFavorito}>
+            <Ionicons
+              name={isFavorito ? 'star' : 'star-outline'}
+              size={24}
+              color={isFavorito ? '#fbbf24' : '#fff'}
+            />
+          </Pressable>
+        </View>
+
+        <View style={s.iconContainer}>
+          <Ionicons name={icone} size={48} color="#fff" />
+        </View>
+
         <Text style={s.categoria}>{documento.categoria}</Text>
         <Text style={s.nome}>{documento.nome}</Text>
 
         {documento.descricao && (
-          <View style={s.secao}>
-            <Text style={s.secaoTitulo}>Descrição</Text>
-            <Text style={s.secaoTexto}>{documento.descricao}</Text>
-          </View>
-        )}
-
-        {documento.requisitos && (
-          <View style={s.secao}>
-            <Text style={s.secaoTitulo}>Requisitos</Text>
-            <Text style={s.secaoTexto}>{documento.requisitos}</Text>
-          </View>
-        )}
-
-        {documento.prazo && (
-          <View style={s.secao}>
-            <Text style={s.secaoTitulo}>Prazo</Text>
-            <Text style={s.secaoTexto}>{documento.prazo}</Text>
-          </View>
+          <Text style={s.descricao}>{documento.descricao}</Text>
         )}
       </View>
 
-      <Pressable style={s.botao}>
-        <Ionicons name="download" size={20} color="#fff" />
-        <Text style={s.botaoTexto}>Solicitar Documento</Text>
-      </Pressable>
+      {/* Conteúdo */}
+      <View style={s.conteudo}>
+        {documento.orgao && (
+          <View style={s.secao}>
+            <View style={s.secaoHeader}>
+              <Ionicons name="business" size={20} color="#0891b2" />
+              <Text style={s.secaoTitulo}>ÓRGÃO EMISSOR</Text>
+            </View>
+            <Text style={s.secaoTexto}>{documento.orgao}</Text>
+          </View>
+        )}
+
+        {(documento.custo || documento.prazo) && (
+          <View style={s.duasColunas}>
+            {documento.custo && (
+              <View style={[s.secao, s.meia]}>
+                <View style={s.secaoHeader}>
+                  <Ionicons name="cash" size={20} color="#0891b2" />
+                  <Text style={s.secaoTitulo}>CUSTO</Text>
+                </View>
+                <Text style={s.secaoTexto}>{documento.custo}</Text>
+              </View>
+            )}
+
+            {documento.prazo && (
+              <View style={[s.secao, s.meia]}>
+                <View style={s.secaoHeader}>
+                  <Ionicons name="time" size={20} color="#0891b2" />
+                  <Text style={s.secaoTitulo}>PRAZO</Text>
+                </View>
+                <Text style={s.secaoTexto}>{documento.prazo}</Text>
+              </View>
+            )}
+          </View>
+        )}
+
+        {documento.documentosNecessarios && (
+          <View style={s.secao}>
+            <View style={s.secaoHeader}>
+              <Ionicons name="checkmark-circle" size={20} color="#0891b2" />
+              <Text style={s.secaoTitulo}>DOCUMENTOS NECESSÁRIOS</Text>
+            </View>
+            {documento.documentosNecessarios
+              .split('\n')
+              .filter((d) => d.trim())
+              .map((doc, idx) => (
+                <View key={idx} style={s.itemLista}>
+                  <Ionicons name="checkmark" size={16} color="#0891b2" />
+                  <Text style={s.itemTexto}>{doc.trim()}</Text>
+                </View>
+              ))}
+          </View>
+        )}
+
+        {documento.ondeEmitir && (
+          <View style={s.secao}>
+            <View style={s.secaoHeader}>
+              <Ionicons name="location" size={20} color="#0891b2" />
+              <Text style={s.secaoTitulo}>ONDE EMITIR</Text>
+            </View>
+            <Text style={s.secaoTexto}>{documento.ondeEmitir}</Text>
+
+            <Pressable style={s.botao}>
+              <Ionicons name="open-outline" size={18} color="#fff" />
+              <Text style={s.botaoTexto}>Acessar site oficial</Text>
+            </Pressable>
+          </View>
+        )}
+      </View>
     </ScrollView>
   );
 }
@@ -132,67 +196,6 @@ const s = StyleSheet.create({
   tela: {
     flex: 1,
     backgroundColor: '#f0f4f8',
-  },
-  conteudo: {
-    padding: 16,
-    paddingBottom: 32,
-  },
-  cabecalho: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 20,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: '#cbd5e1',
-  },
-  categoria: {
-    fontSize: 12,
-    color: '#0891b2',
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  nome: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#1a1a2e',
-    marginBottom: 16,
-  },
-  secao: {
-    marginTop: 16,
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#cbd5e1',
-  },
-  secaoTitulo: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#1a1a2e',
-    marginBottom: 8,
-  },
-  secaoTexto: {
-    fontSize: 14,
-    color: '#64748b',
-    lineHeight: 20,
-  },
-  botao: {
-    backgroundColor: '#0891b2',
-    borderRadius: 10,
-    padding: 16,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 8,
-  },
-  botaoTexto: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
   },
   telaCarregando: {
     flex: 1,
@@ -223,5 +226,104 @@ const s = StyleSheet.create({
   textoVoltar: {
     color: '#fff',
     fontWeight: 'bold',
+  },
+  cabecalho: {
+    backgroundColor: '#0891b2',
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 24,
+  },
+  cabecalhoTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  iconContainer: {
+    width: 64,
+    height: 64,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  categoria: {
+    fontSize: 12,
+    color: 'rgba(255,255,255,0.8)',
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  nome: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 12,
+  },
+  descricao: {
+    fontSize: 14,
+    color: 'rgba(255,255,255,0.9)',
+    lineHeight: 20,
+  },
+  conteudo: {
+    padding: 16,
+    paddingBottom: 32,
+  },
+  secao: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  secaoHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 12,
+  },
+  secaoTitulo: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#0891b2',
+  },
+  secaoTexto: {
+    fontSize: 14,
+    color: '#64748b',
+    lineHeight: 20,
+  },
+  duasColunas: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  meia: {
+    flex: 1,
+  },
+  itemLista: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 8,
+  },
+  itemTexto: {
+    fontSize: 14,
+    color: '#64748b',
+    flex: 1,
+  },
+  botao: {
+    backgroundColor: '#0891b2',
+    borderRadius: 10,
+    padding: 14,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 12,
+  },
+  botaoTexto: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 15,
   },
 });
