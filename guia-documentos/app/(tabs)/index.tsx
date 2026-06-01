@@ -70,7 +70,7 @@ const s = StyleSheet.create({
   titulo: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#15803d',
+    color: '#2da000',
     marginBottom: 16,
     textAlign: 'center',
   },
@@ -95,7 +95,7 @@ const s = StyleSheet.create({
   nome: {
     fontSize: 15,
     fontWeight: 'bold',
-    color: '#1a1a2e',
+    color: '#001b47',
   },
   categoria: {
     fontSize: 13,
