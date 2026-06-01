@@ -91,10 +91,17 @@ guia-documentos/
 ```
 ## Checklist
 [ ] Node.js e Git instalados
+
 [ ] Expo Go instalado no celular
+
 [ ] Repositório clonado
+
 [ ] npm install executado
+
 [ ] .env.local criado com credenciais
+
 [ ] npx expo start --clear rodando
+
 [ ] QR code escaneado
+
 [ ] App funcionando no celular
